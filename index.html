@@ -98,7 +98,7 @@
               Queue:
               <ul>
                 <li>Gets added to stack when stack empty</li>
-                <li>setTimeout and setInterval added here</li>
+                <li>E.g. setTimeout and setInterval added here</li>
               </ul>
             </li>
           </ul>
@@ -204,12 +204,21 @@
           <h3>Event Loops aren’t Awesome!</h3>
 
           <ul>
-            <li>CPU intensive work will block your process</li>
-            <li>You can offload work to different processes (Node.js)</li>
-            <li>It isn’t making use of those 8 cores you’ve got</li>
-            <li>You can use the Multi-node module though (Node.js)</li>
-            <li>Memory leaks are possible, not so with PHP</li>
-            <li>You can program better and prevent it though ;-)</li>
+            <li>CPU intensive work will block your process
+              <ul>
+                <li>You can offload work to different processes (Node.js)</li>
+              </ul>
+            </li>
+            <li>It isn’t making use of those 8 cores you’ve got
+              <ul>
+                <li>You can use the Multi-node module though (Node.js)</li>
+              </ul>
+            </li>
+            <li>Memory leaks are possible, not so with PHP
+              <ul>
+                <li>You can program better and prevent it though ;-)</li>
+              </ul>
+            </li>
           </ul>
         </section>
 
@@ -273,18 +282,16 @@
             <code class="javascript">
               // main.js
               var worker = new Worker('task.js');
-              worker.postMessage({total: 5000000000});
-              worker.onmessage = function(e) {
-                console.log(e.data);
-              };
+              worker.postMessage({iterations: 5000000000});
+              worker.onmessage = function(e) { console.log(e.data); };
 
               // task.js
               onmessage = function(e) {
-                var total = 0;
-                for (var i = 0; i &lt; e.total; i++) {
-                  total += i;
+                var pi = 0, n = 1;
+                for (i = 0; i &lt;= e.data.iterations; i++) {
+                  pi = pi + (4/n) - (4 / (n + 2)); n += 4;
                 }
-                postMessage(total);
+                postMessage(pi);
               };
             </code>
           </pre>
