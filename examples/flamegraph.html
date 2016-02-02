@@ -1,0 +1,28 @@
+<button id="b">click</button>
+<script>
+function run() {
+  console.log("Adding code to the queue");
+
+  setTimeout(function c() { // Added somewhere in Heap
+    console.log("Running next code from queue");
+  }, 0);
+
+  function a(x) { // Added somewhere in Heap
+    console.log("a() frame added to stack");
+    b(x);
+    console.log("a() frame removed from stack");
+  }
+
+  function b(y) { // Added somewhere in Heap
+    console.log("b() frame added to stack");
+    console.log("Value passed in is " + y);
+    console.log("b() frame removed from stack");
+  }
+
+  a(42);
+
+  console.log("Ending work for this stack");
+}
+  var b = document.getElementById('b');
+  b.addEventListener('click', run);
+</script>

@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <title>JavaScript Event Loop</title>
+    <link rel="stylesheet" href="./reveal.js-3.2.0/css/reveal.css" />
+    <link rel="stylesheet" href="./reveal.js-3.2.0/css/theme/black.css" id="theme" />
+    <link rel="stylesheet" href="./zenburn.css"/ >
+    <style>
+      .reveal pre {
+        box-shadow: none;
+        margin: 0;
+        width: auto;
+      }
+      .reveal pre code {
+        font-size: 90%;
+        line-height: 1.2em;
+        max-height: none;
+      }
+      .reveal .hljs {
+        background-color: transparent;
+      }
+      .reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5, .reveal h6 {
+        text-transform: none;
+        color: #affa42;
+      }
+      .reveal section img {
+        border: 0px;
+        background-color: transparent;
+        margin: 0px;
+      }
+      .reveal .floater {
+        position: absolute;
+        top: 0px;
+      }
+      .reveal .floater code {
+        font-size: 0.5em;
+        display: block;
+      }
+      .reveal .floater-left {
+        left: 0px;
+      }
+      .reveal .floater-right {
+        right: 0px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>The JavaScript Event Loop</h2>
+          <p>Presented by Thomas Hunter II (<a href="https://twitter.com/tlhunter">@tlhunter</a>)</p>
+          <!--<p><small>(Originally presented at Penguicon 2013)</small></p>-->
+        </section>
+
+        <section>
+          <h3>What does MultiThreaded mean?</h3>
+          <ul>
+            <li>Makes use of separate CPU Cores as “Threads”</li>
+            <li>Uses a single process within the Operating System</li>
+            <li>True concurrency, lets you do two things at once</li>
+            <li>Can have Race Conditions (simultaneous memory use)</li>
+            <li>“Hard” to get it right</li>
+            <li>Ran out of Ghz, hardware adds more cores</li>
+          </ul>
+        </section>
+
+        <section>
+          <h3>JavaScript is SingleThreaded</h3>
+          <ul>
+            <li>Makes use of a single CPU core</li>
+            <li>CPU intensive work is never “concurrent”</li>
+            <li>Easier to pull off, as in less technical difficulties</li>
+          </ul>
+        </section>
+
+        <section>
+          <h3>Technical Implementation</h3>
+          <ul>
+            <li>
+              Stack:
+              <ul>
+                <li>Functions to run and available variables</li>
+                <li>More added as code is run</li>
+                <li>Stuff guaranteed to run in order</li>
+              </ul>
+            </li>
+            <li>
+              Heap:
+            <ul>
+              <li>“Chaotic” listing of objects</li>
+            </ul>
+            </li>
+            <li>
+              Queue:
+              <ul>
+                <li>Gets added to stack when stack empty</li>
+                <li>setTimeout and setInterval added here</li>
+              </ul>
+            </li>
+          </ul>
+        </section>
+
+        <section class="side-by-side">
+          <section>
+            <h3>Example Code-run</h3>
+            <pre>
+              <code class="javascript">
+                function run() {
+                  console.log("Adding code to the queue");
+
+                  setTimeout(function c() { // Added somewhere in Heap
+                    console.log("Running next code from queue");
+                  }, 0);
+
+                  function a(x) { // Added somewhere in Heap
+                    console.log("a() frame added to stack");
+                    b(x);
+                    console.log("a() frame removed from stack");
+                  }
+
+                  function b(y) { // Added somewhere in Heap
+                    console.log("b() frame added to stack");
+                    console.log("Value passed in is " + y);
+                    console.log("b() frame removed from stack");
+                  }
+
+                  a(42);
+
+                  console.log("Ending work for this stack");
+                }
+              </code>
+            </pre>
+          </section>
+
+          <section>
+            <h3>Output</h3>
+
+            <img src="./images/flamegraph.png" />
+
+            <ul>
+              <li>Adding code to the queue </li>
+              <li>a() frame added to stack</li>
+              <li>b() frame added to stack</li>
+              <li>Value passed in is 42</li>
+              <li>b() frame removed from stack</li>
+              <li>a() frame removed from stack</li>
+              <li>Ending work for this stack</li>
+              <li>Running next code from queue</li>
+            </ul>
+          </section>
+        </section>
+
+        <section>
+          <h3>Your App is Mostly Asleep</h3>
+          <ul>
+            <li>Node.js: All I/O is non-blocking</li>
+            <li>E.g. it gets thrown into the Queue</li>
+            <li>Browser: Wait for a click to happen</li>
+            <li>PHP: Wait for a MySQL query to run</li>
+            <li>These show how slow I/O can be →</li>
+          </ul>
+
+          <ul>
+            <li>L1-Cache  3 cycles</li>
+            <li>L2-Cache  14 cycles</li>
+            <li>RAM       250 cycles</li>
+            <li>Disk      41,000,000</li>
+            <li>Network   240,000,000</li>
+          </ul>
+        </section>
+
+        <section>
+          <h3>Sequential vs Parallel</h3>
+          <ul>
+            <li>Traditional web apps perform each I/O Sequentially</li>
+            <li>With an Event Loop, they can be run in Parallel</li>
+            <li>Since most time is wasted doing I/O, very inefficient</li>
+          </ul>
+
+          <h5>Series</h5>
+          <img width="480" height="92" src="./images/series.svg" />
+
+          <h5>Parallel</h5>
+          <img width="480" height="92" src="./images/parallel.svg" />
+        </section>
+
+        <section>
+          <h3>Event Loops are Awesome!</h3>
+          <ul>
+            <li>No race conditions</li>
+            <li>Typical web apps spend their time waiting on I/O</li>
+            <li>No funky syntax; it just works</li>
+            <li>Perform I/O operations “in parallel” easily</li>
+            <li>Stateful web applications are easy compared to PHP</li>
+            <li>Long run apps, don’t need web servers, shared data...</li>
+          </ul>
+        </section>
+
+        <section>
+          <h3>Event Loops aren’t Awesome!</h3>
+
+          <ul>
+            <li>CPU intensive work will block your process</li>
+            <li>You can offload work to different processes (Node.js)</li>
+            <li>It isn’t making use of those 8 cores you’ve got</li>
+            <li>You can use the Multi-node module though (Node.js)</li>
+            <li>Memory leaks are possible, not so with PHP</li>
+            <li>You can program better and prevent it though ;-)</li>
+          </ul>
+        </section>
+
+        <section>
+          <div class="floater floater-left">
+            <button id="work-current">Current Thread</button> 
+            <code id="work-current-result">...</code>
+          </div>
+
+          <script>
+            var buttonCurrent = document.getElementById('work-current');
+            var resultCurrent = document.getElementById('work-current-result');
+
+            buttonCurrent.addEventListener('click', function() {
+              var pi = 0;
+              var n = 1;
+              for (i = 0; i <= 1000000000; i++) {
+                pi = pi + (4/n) - (4 / (n + 2));
+                n = n + 4;
+              }
+
+              resultCurrent.innerHTML = pi;
+            });
+          </script>
+
+          <div class="floater floater-right ">
+            <button id="work-worker">Worker Thread</button> 
+            <code id="work-worker-result">...</code>
+          </div>
+
+          <script>
+            var buttonWorker = document.getElementById('work-worker');
+            var resultWorker = document.getElementById('work-worker-result');
+
+            try {
+              var worker = new Worker('task.js');
+
+              worker.onmessage = function(e) {
+                resultWorker.innerHTML = e.data;
+                console.log(e);
+              };
+
+              buttonWorker.addEventListener('click', function() {
+                worker.postMessage({iterations: 1000000000});
+              });
+            } catch(e) {
+              console.error(e);
+              resultWorker.innerHTML = e.name;
+            }
+
+          </script>
+
+          <h3>Web Workers</h3>
+          <ul>
+            <li>IE10, Firefox 3.5, Chrome 4, Safari 4, Opera 10.6</li>
+            <li>Share simple JSON data, not complex objects</li>
+            <li>Prevents deadlocks/race conditions because of this</li>
+          </ul>
+
+          <pre>
+            <code class="javascript">
+              // main.js
+              var worker = new Worker('task.js');
+              worker.postMessage({total: 5000000000});
+              worker.onmessage = function(e) {
+                console.log(e.data);
+              };
+
+              // task.js
+              onmessage = function(e) {
+                var total = 0;
+                for (var i = 0; i &lt; e.total; i++) {
+                  total += i;
+                }
+                postMessage(total);
+              };
+            </code>
+          </pre>
+        </section>
+
+        <section>
+          <h3>Conclusion</h3>
+          <ul>
+            <li>Great for I/O bound applications (most web apps)</li>
+            <li>Horrible for CPU bound applications (do it in C)</li>
+            <li>Appears to be a single multi-threaded process</li>
+            <li>“Fakes” concurrency</li>
+          </ul>
+        </section>
+      </div>
+    </div>
+
+    <script src="./reveal.js-3.2.0/lib/js/head.min.js"></script>
+    <script src="./reveal.js-3.2.0/js/reveal.js"></script>
+
+    <script>
+      Reveal.initialize({
+        center: true,
+        history: true,
+        transition: 'convex',
+        dependencies: [
+          {
+            src: './reveal.js-3.2.0/plugin/highlight/highlight.js',
+            async: true,
+            callback: function() {
+              hljs.initHighlightingOnLoad();
+            }
+          }
+        ]
+      });
+    </script>
+  </body>
+</html>
