@@ -45,6 +45,14 @@
       .reveal .floater-right {
         right: 0px;
       }
+      .reveal .slides section .fragment.highlight-current-green.current-fragment {
+        color: black;
+        background-color: #affa42;
+      }
+
+      .reveal .slides section .fragment.highlight-current-green.current-fragment * {
+        color: black;
+      }
     </style>
   </head>
 
@@ -131,29 +139,29 @@
           <section>
             <h3>Example Code-run</h3>
             <pre>
-              <code class="javascript">
-                function run() {
-                  console.log("Adding code to the queue");
+              <code class="javascript" data-noescape>
+                <span class="fragment highlight-current-green" data-fragment-index="1">function run() {</span>
+                  <span class="fragment highlight-current-green" data-fragment-index="5">console.log("Adding code to the queue");</span>
 
-                  setTimeout(function c() { // c() Added somewhere in Heap
-                    console.log("Running next code from queue");
+                  <span class="fragment highlight-current-green" data-fragment-index="6">setTimeout</span>(<span class="fragment highlight-current-green" data-fragment-index="2">function c() { // c() Added somewhere in Heap</span>
+                    <span class="fragment highlight-current-green" data-fragment-index="15">console.log("Running next code from queue");</span>
                   }, 0);
 
-                  function a(x) { // a() Added somewhere in Heap
-                    console.log("a() frame added to stack");
-                    b(x);
-                    console.log("a() frame removed from stack");
+                  <span class="fragment highlight-current-green" data-fragment-index="3">function a(x) { // a() Added somewhere in Heap</span>
+                    <span class="fragment highlight-current-green" data-fragment-index="8">console.log("a() frame added to stack");</span>
+                    <span class="fragment highlight-current-green" data-fragment-index="9">b(x);</span>
+                    <span class="fragment highlight-current-green" data-fragment-index="13">console.log("a() frame removed from stack");</span>
                   }
 
-                  function b(y) { // b() Added somewhere in Heap
-                    console.log("b() frame added to stack");
-                    console.log("Value passed in is " + y);
-                    console.log("b() frame removed from stack");
+                  <span class="fragment highlight-current-green" data-fragment-index="4">function b(y) { // b() Added somewhere in Heap</span>
+                    <span class="fragment highlight-current-green" data-fragment-index="10">console.log("b() frame added to stack");</span>
+                    <span class="fragment highlight-current-green" data-fragment-index="11">console.log("Value passed in is " + y);</span>
+                    <span class="fragment highlight-current-green" data-fragment-index="12">console.log("b() frame removed from stack");</span>
                   }
 
-                  a(42);
+                  <span class="fragment highlight-current-green" data-fragment-index="7">a(42);</span>
 
-                  console.log("Ending work for this stack");
+                  <span class="fragment highlight-current-green" data-fragment-index="14">console.log("Ending work for this stack");</span>
                 }
               </code>
             </pre>
