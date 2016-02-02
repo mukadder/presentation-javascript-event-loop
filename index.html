@@ -92,97 +92,92 @@
         </section>
 
         <section>
-          <section>
-            <h3>Technical Implementation</h3>
-            <ul>
-              <li>
-                Stack:
-                <ul>
-                  <li>Function calls, context information</li>
-                  <li>As functions call functions, add frames to stack</li>
-                </ul>
-              </li>
-              <li>
-                Queue:
-                <ul>
-                  <li>Gets added to stack when previous stack empties</li>
-                  <li>E.g. setTimeout() and setInterval() add to queue</li>
-                </ul>
-              </li>
-              <li>
-                Heap:
-                <ul>
-                  <li>“Chaotic” collection of objects, context vars, etc.</li>
-                  <li>Garbage Collection cleans items from heap</li>
-                </ul>
-              </li>
-              <li>
-                Event Handlers:
-                <ul>
-                  <li>Can add items to queue in the future</li>
-                </ul>
-              </li>
-            </ul>
-          </section>
-
-          <section>
-            <h3>Beautiful Diagram</h3>
-
-            <img style="max-width: 300px; max-height: 300px;" src="images/stack-heap-queue.svg" />
-
-            <p><small>Credit: Mozilla Developer Network:<br /><a href="http://mzl.la/Y5Dh2x">http://mzl.la/Y5Dh2x</a></small></p>
-          </section>
-
+          <h3>Technical Implementation</h3>
+          <ul>
+            <li>
+              Stack:
+              <ul>
+                <li>Function calls, context information</li>
+                <li>As functions call functions, add frames to stack</li>
+              </ul>
+            </li>
+            <li>
+              Queue:
+              <ul>
+                <li>Gets added to stack when previous stack empties</li>
+                <li>E.g. setTimeout() and setInterval() add to queue</li>
+              </ul>
+            </li>
+            <li>
+              Heap:
+              <ul>
+                <li>“Chaotic” collection of objects, context vars, etc.</li>
+                <li>Garbage Collection cleans items from heap</li>
+              </ul>
+            </li>
+            <li>
+              Event Handlers:
+              <ul>
+                <li>Can add items to queue in the future</li>
+              </ul>
+            </li>
+          </ul>
         </section>
 
-        <section class="side-by-side">
-          <section>
-            <h3>Example Code-run</h3>
-            <pre>
-              <code class="javascript" data-noescape>
-                <span class="fragment highlight-current-green" data-fragment-index="1">function run() {</span>
-                  <span class="fragment highlight-current-green" data-fragment-index="5">console.log("Adding code to the queue");</span>
+        <section>
+          <h3>Beautiful Diagram</h3>
 
-                  <span class="fragment highlight-current-green" data-fragment-index="6">setTimeout</span>(<span class="fragment highlight-current-green" data-fragment-index="2">function c() { // c() Added somewhere in Heap</span>
-                    <span class="fragment highlight-current-green" data-fragment-index="15">console.log("Running next code from queue");</span>
-                  }, 0);
+          <img style="max-width: 300px; max-height: 300px;" src="images/stack-heap-queue.svg" />
 
-                  <span class="fragment highlight-current-green" data-fragment-index="3">function a(x) { // a() Added somewhere in Heap</span>
-                    <span class="fragment highlight-current-green" data-fragment-index="8">console.log("a() frame added to stack");</span>
-                    <span class="fragment highlight-current-green" data-fragment-index="9">b(x);</span>
-                    <span class="fragment highlight-current-green" data-fragment-index="13">console.log("a() frame removed from stack");</span>
-                  }
+          <p><small>Credit: Mozilla Developer Network:<br /><a href="http://mzl.la/Y5Dh2x">http://mzl.la/Y5Dh2x</a></small></p>
+        </section>
 
-                  <span class="fragment highlight-current-green" data-fragment-index="4">function b(y) { // b() Added somewhere in Heap</span>
-                    <span class="fragment highlight-current-green" data-fragment-index="10">console.log("b() frame added to stack");</span>
-                    <span class="fragment highlight-current-green" data-fragment-index="11">console.log("Value passed in is " + y);</span>
-                    <span class="fragment highlight-current-green" data-fragment-index="12">console.log("b() frame removed from stack");</span>
-                  }
+        <section>
+          <h3>Example Code-run</h3>
+          <pre>
+            <code class="javascript" data-noescape>
+              <span class="fragment highlight-current-green" data-fragment-index="1">function run() {</span>
+                <span class="fragment highlight-current-green" data-fragment-index="5">console.log("Adding code to the stack");</span>
 
-                  <span class="fragment highlight-current-green" data-fragment-index="7">a(42);</span>
+                <span class="fragment highlight-current-green" data-fragment-index="6">setTimeout</span>(<span class="fragment highlight-current-green" data-fragment-index="2">function c() { // c() Added somewhere in Heap</span>
+                  <span class="fragment highlight-current-green" data-fragment-index="15">console.log("Running next code from queue");</span>
+                }, 0);
 
-                  <span class="fragment highlight-current-green" data-fragment-index="14">console.log("Ending work for this stack");</span>
+                <span class="fragment highlight-current-green" data-fragment-index="3">function a(x) { // a() Added somewhere in Heap</span>
+                  <span class="fragment highlight-current-green" data-fragment-index="8">console.log("a() frame added to stack");</span>
+                  <span class="fragment highlight-current-green" data-fragment-index="9">b(x);</span>
+                  <span class="fragment highlight-current-green" data-fragment-index="13">console.log("a() frame removed from stack");</span>
                 }
-              </code>
-            </pre>
-          </section>
 
-          <section>
-            <h3>Code-run Output, Flame Graph</h3>
+                <span class="fragment highlight-current-green" data-fragment-index="4">function b(y) { // b() Added somewhere in Heap</span>
+                  <span class="fragment highlight-current-green" data-fragment-index="10">console.log("b() frame added to stack");</span>
+                  <span class="fragment highlight-current-green" data-fragment-index="11">console.log("Value passed in is " + y);</span>
+                  <span class="fragment highlight-current-green" data-fragment-index="12">console.log("b() frame removed from stack");</span>
+                }
 
-            <img src="./images/flamegraph.png" />
+                <span class="fragment highlight-current-green" data-fragment-index="7">a(42);</span>
 
-            <ul>
-              <li>Adding code to the queue </li>
-              <li>a() frame added to stack</li>
-              <li>b() frame added to stack</li>
-              <li>Value passed in is 42</li>
-              <li>b() frame removed from stack</li>
-              <li>a() frame removed from stack</li>
-              <li>Ending work for this stack</li>
-              <li>Running next code from queue</li>
-            </ul>
-          </section>
+                <span class="fragment highlight-current-green" data-fragment-index="14">console.log("Ending work for this stack");</span>
+              }
+            </code>
+          </pre>
+        </section>
+
+        <section>
+          <h3>Code-run Output, Flame Graph</h3>
+
+          <img src="./images/flamegraph.png" />
+
+          <ul>
+            <li>Adding code to the queue </li>
+            <li>a() frame added to stack</li>
+            <li>b() frame added to stack</li>
+            <li>Value passed in is 42</li>
+            <li>b() frame removed from stack</li>
+            <li>a() frame removed from stack</li>
+            <li>Ending work for this stack</li>
+            <li>Running next code from queue</li>
+          </ul>
         </section>
 
         <section>
@@ -224,7 +219,7 @@
         </section>
 
         <section>
-          <h3>Event Loops are Awesome!</h3>
+          <h4>Why Single-Threaded Event Loops are Awesome:</h4>
           <ul>
             <li>No concurrent memory access problems</li>
             <li>Usually web apps spend most time waiting on I/O</li>
@@ -238,7 +233,7 @@
         </section>
 
         <section>
-          <h3>Event Loops aren’t Awesome!</h3>
+          <h4>Why Single-Threaded Event Loops aren’t Awesome:</h4>
 
           <ul>
             <li>CPU intensive work will block your process
@@ -310,9 +305,9 @@
 
           <h3>Web Workers</h3>
           <ul>
-            <li>IE10, Firefox 3.5, Chrome 4, Safari 4, Opera 10.6</li>
             <li>Message Passing via JSON structures</li>
             <li>No deadlocks or race conditions, working with “copies”</li>
+            <li>IE10, Firefox 3.5, Chrome 4, Safari 4, Opera 10.6</li>
           </ul>
 
           <pre>
