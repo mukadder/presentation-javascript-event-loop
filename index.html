@@ -52,7 +52,8 @@
       <div class="slides">
         <section>
           <h2>The JavaScript Event Loop</h2>
-          <p>Presented by Thomas Hunter II (<a href="https://twitter.com/tlhunter">@tlhunter</a>)</p>
+          <p>Presented by Thomas Hunter II</p>
+          <p><small><a href="https://twitter.com/tlhunter">@tlhunter</a></small></p>
           <!--<p><small>(Originally presented at Penguicon 2013)</small></p>-->
         </section>
 
@@ -74,34 +75,52 @@
             <li>Makes use of a single CPU core</li>
             <li>CPU intensive work is never “concurrent”</li>
             <li>Easier to pull off, as in less technical difficulties</li>
+            <li>Janky Scroll Parallax Clickjacking</li>
           </ul>
         </section>
 
         <section>
-          <h3>Technical Implementation</h3>
-          <ul>
-            <li>
-              Stack:
-              <ul>
-                <li>Functions to run and available variables</li>
-                <li>More added as code is run</li>
-                <li>Stuff guaranteed to run in order</li>
-              </ul>
-            </li>
-            <li>
-              Heap:
+          <section>
+            <h3>Technical Implementation</h3>
             <ul>
-              <li>“Chaotic” listing of objects</li>
+              <li>
+                Stack:
+                <ul>
+                  <li>Function calls, context information</li>
+                  <li>As functions call functions stack gets deeper</li>
+                </ul>
+              </li>
+              <li>
+                Queue:
+                <ul>
+                  <li>Gets added to stack when stack empty</li>
+                  <li>E.g. setTimeout and setInterval add to queue</li>
+                </ul>
+              </li>
+              <li>
+                Heap:
+                <ul>
+                  <li>“Chaotic” collection of objects, DOM elements, etc.</li>
+                  <li>Garbage Collection cleans items from heap</li>
+                </ul>
+              </li>
+              <li>
+                Event Handlers:
+                <ul>
+                  <li>Can add items to queue in the future</li>
+                </ul>
+              </li>
             </ul>
-            </li>
-            <li>
-              Queue:
-              <ul>
-                <li>Gets added to stack when stack empty</li>
-                <li>E.g. setTimeout and setInterval added here</li>
-              </ul>
-            </li>
-          </ul>
+          </section>
+
+          <section>
+            <h3>Beautiful Diagram</h3>
+
+            <img style="max-width: 300px; max-height: 300px;" src="images/stack-heap-queue.svg" />
+
+            <p><small>Credit: Mozilla Developer Network:<br /><a href="http://mzl.la/Y5Dh2x">http://mzl.la/Y5Dh2x</a></small></p>
+          </section>
+
         </section>
 
         <section class="side-by-side">
@@ -157,19 +176,22 @@
         <section>
           <h3>Your App is Mostly Asleep</h3>
           <ul>
-            <li>Node.js: All I/O is non-blocking</li>
-            <li>E.g. it gets thrown into the Queue</li>
-            <li>Browser: Wait for a click to happen</li>
-            <li>PHP: Wait for a MySQL query to run</li>
-            <li>These show how slow I/O can be →</li>
-          </ul>
-
-          <ul>
-            <li>L1-Cache  3 cycles</li>
-            <li>L2-Cache  14 cycles</li>
-            <li>RAM       250 cycles</li>
-            <li>Disk      41,000,000</li>
-            <li>Network   240,000,000</li>
+            <li>Node.js: 
+              <ul>
+                <li>All I/O is non-blocking (libuv)</li>
+                <li>C++ API does the real work, queues up your callbacks</li>
+              </ul>
+            </li>
+            <li>Browser
+              <ul>
+                <li>Wait for a click to happen</li>
+              </ul>
+            </li>
+            <li>PHP
+              <ul>
+                <li>Wait for a MySQL query to run</li>
+              </ul>
+            </li>
           </ul>
         </section>
 
@@ -302,8 +324,7 @@
           <ul>
             <li>Great for I/O bound applications (most web apps)</li>
             <li>Horrible for CPU bound applications (do it in C)</li>
-            <li>Appears to be a single multi-threaded process</li>
-            <li>“Fakes” concurrency</li>
+            <li>Feels like a Multi-Threaded process, “Fakes” concurrency</li>
           </ul>
         </section>
       </div>
