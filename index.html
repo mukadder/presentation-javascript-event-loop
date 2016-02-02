@@ -29,6 +29,7 @@
         border: 0px;
         background-color: transparent;
         margin: 0px;
+        box-shadow: none;
       }
       .reveal .floater {
         position: absolute;
@@ -58,24 +59,27 @@
         </section>
 
         <section>
-          <h3>What does MultiThreaded mean?</h3>
+          <h3>What does Multi-Threaded mean?</h3>
           <ul>
-            <li>Makes use of separate CPU Cores as “Threads”</li>
-            <li>Uses a single process within the Operating System</li>
+            <li>Makes use of separate CPU Cores via “Threads”
+              <ul>
+                <li>Does so using a single process</li>
+              </ul>
+            </li>
             <li>True concurrency, lets you do two things at once</li>
-            <li>Can have Race Conditions (simultaneous memory use)</li>
-            <li>“Hard” to get it right</li>
-            <li>Ran out of Ghz, hardware adds more cores</li>
+            <li>Race Conditions, deadlocks, simultaneous memory usage</li>
+            <li>“Hard” to get it right, problems are hard to debug</li>
+            <li>Moore's Law, ran out of Ghz, add more cores</li>
           </ul>
         </section>
 
         <section>
-          <h3>JavaScript is SingleThreaded</h3>
+          <h3>JavaScript is Single-Threaded</h3>
           <ul>
-            <li>Makes use of a single CPU core</li>
+            <li>Makes use of a single CPU thread</li>
             <li>CPU intensive work is never “concurrent”</li>
-            <li>Easier to pull off, as in less technical difficulties</li>
-            <li>Janky Scroll Parallax Clickjacking</li>
+            <li>Easier to pull off and reason about</li>
+            <li>Unfortunate side-effects such as Scroll Jank</li>
           </ul>
         </section>
 
@@ -87,20 +91,20 @@
                 Stack:
                 <ul>
                   <li>Function calls, context information</li>
-                  <li>As functions call functions stack gets deeper</li>
+                  <li>As functions call functions, add frames to stack</li>
                 </ul>
               </li>
               <li>
                 Queue:
                 <ul>
-                  <li>Gets added to stack when stack empty</li>
-                  <li>E.g. setTimeout and setInterval add to queue</li>
+                  <li>Gets added to stack when previous stack empties</li>
+                  <li>E.g. setTimeout() and setInterval() add to queue</li>
                 </ul>
               </li>
               <li>
                 Heap:
                 <ul>
-                  <li>“Chaotic” collection of objects, DOM elements, etc.</li>
+                  <li>“Chaotic” collection of objects, context vars, etc.</li>
                   <li>Garbage Collection cleans items from heap</li>
                 </ul>
               </li>
@@ -131,17 +135,17 @@
                 function run() {
                   console.log("Adding code to the queue");
 
-                  setTimeout(function c() { // Added somewhere in Heap
+                  setTimeout(function c() { // c() Added somewhere in Heap
                     console.log("Running next code from queue");
                   }, 0);
 
-                  function a(x) { // Added somewhere in Heap
+                  function a(x) { // a() Added somewhere in Heap
                     console.log("a() frame added to stack");
                     b(x);
                     console.log("a() frame removed from stack");
                   }
 
-                  function b(y) { // Added somewhere in Heap
+                  function b(y) { // b() Added somewhere in Heap
                     console.log("b() frame added to stack");
                     console.log("Value passed in is " + y);
                     console.log("b() frame removed from stack");
@@ -156,7 +160,7 @@
           </section>
 
           <section>
-            <h3>Output</h3>
+            <h3>Code-run Output, Flame Graph</h3>
 
             <img src="./images/flamegraph.png" />
 
@@ -179,7 +183,8 @@
             <li>Node.js: 
               <ul>
                 <li>All I/O is non-blocking (libuv)</li>
-                <li>C++ API does the real work, queues up your callbacks</li>
+                <li>C++ API does the heavy lifting</li>
+                <li>Once I/O is complete callback is queued up</li>
               </ul>
             </li>
             <li>Browser
@@ -200,25 +205,27 @@
           <ul>
             <li>Traditional web apps perform each I/O Sequentially</li>
             <li>With an Event Loop, they can be run in Parallel</li>
-            <li>Since most time is wasted doing I/O, very inefficient</li>
+            <li>Since most time is spent waiting for I/O, very inefficient</li>
           </ul>
 
-          <h5>Series</h5>
-          <img width="480" height="92" src="./images/series.svg" />
+          <h5>Sequential I/O</h5>
+          <img width="480" height="92" src="./images/sequential.svg" />
 
-          <h5>Parallel</h5>
+          <h5>Parallel I/O</h5>
           <img width="480" height="92" src="./images/parallel.svg" />
         </section>
 
         <section>
           <h3>Event Loops are Awesome!</h3>
           <ul>
-            <li>No race conditions</li>
-            <li>Typical web apps spend their time waiting on I/O</li>
-            <li>No funky syntax; it just works</li>
-            <li>Perform I/O operations “in parallel” easily</li>
-            <li>Stateful web applications are easy compared to PHP</li>
-            <li>Long run apps, don’t need web servers, shared data...</li>
+            <li>No concurrent memory access problems</li>
+            <li>Usually web apps spend most time waiting on I/O</li>
+            <li>Easily perform I/O operations “in parallel”
+              <ul>
+                <li>Thanks to non-blocking APIs</li>
+              </ul>
+            </li>
+            <li>Long running apps, don’t need separate web servers</li>
           </ul>
         </section>
 
@@ -228,17 +235,17 @@
           <ul>
             <li>CPU intensive work will block your process
               <ul>
-                <li>You can offload work to different processes (Node.js)</li>
+                <li>Though you can send work to other Node processes</li>
               </ul>
             </li>
-            <li>It isn’t making use of those 8 cores you’ve got
+            <li>It isn’t making use of those 8 cores you bought
               <ul>
-                <li>You can use the Multi-node module though (Node.js)</li>
+                <li>Though you can use the Multi-Node module</li>
               </ul>
             </li>
             <li>Memory leaks are possible, not so with PHP
               <ul>
-                <li>You can program better and prevent it though ;-)</li>
+                <li>Though you can write your apps more carefully ;-)</li>
               </ul>
             </li>
           </ul>
@@ -296,8 +303,8 @@
           <h3>Web Workers</h3>
           <ul>
             <li>IE10, Firefox 3.5, Chrome 4, Safari 4, Opera 10.6</li>
-            <li>Share simple JSON data, not complex objects</li>
-            <li>Prevents deadlocks/race conditions because of this</li>
+            <li>Message Passing via JSON structures</li>
+            <li>No deadlocks or race conditions, working with “copies”</li>
           </ul>
 
           <pre>
@@ -322,9 +329,13 @@
         <section>
           <h3>Conclusion</h3>
           <ul>
-            <li>Great for I/O bound applications (most web apps)</li>
-            <li>Horrible for CPU bound applications (do it in C)</li>
-            <li>Feels like a Multi-Threaded process, “Fakes” concurrency</li>
+            <li>The Single-Threaded JavaScript Event Loop is...
+              <ul>
+              <li>Great for I/O bound applications (most web apps)</li>
+              <li>Horrible for CPU bound applications (do it in C)</li>
+              <li>“Fakes” the feeling of a Multi-Threaded process</li>
+              </ul>
+            </li>
           </ul>
         </section>
       </div>
