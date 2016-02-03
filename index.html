@@ -66,6 +66,7 @@
           <!--<p><small>(Originally presented at Penguicon 2013)</small></p>-->
         </section>
 
+        <!--
         <section>
           <h3>What does Multi-Threaded mean?</h3>
           <ul>
@@ -80,13 +81,14 @@
             <li>Moore's Law, ran out of Ghz, add more cores</li>
           </ul>
         </section>
+        -->
 
         <section>
           <h3>JavaScript is Single-Threaded</h3>
           <ul>
-            <li>Makes use of a single CPU thread</li>
-            <li>CPU intensive work is never “concurrent”</li>
-            <li>Easier to pull off and reason about</li>
+            <li>Makes use of a single CPU thread (think CPU core)</li>
+            <li>Nothing done inside JavaScript is “concurrent”</li>
+            <li>Easier to reason about than Multi-Threaded</li>
             <li>Unfortunate side-effects such as Scroll Jank</li>
           </ul>
         </section>
@@ -95,28 +97,28 @@
           <h3>Technical Implementation</h3>
           <ul>
             <li>
-              Stack:
+              <strong>Queue</strong> (Many Languages Don't Have):
+              <ul>
+                <li>Work scheduled to be added to stack</li>
+                <li>E.g. setTimeout() and setInterval() add to queue</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Stack</strong>:
               <ul>
                 <li>Function calls, context information</li>
                 <li>As functions call functions, add frames to stack</li>
               </ul>
             </li>
             <li>
-              Queue:
-              <ul>
-                <li>Gets added to stack when previous stack empties</li>
-                <li>E.g. setTimeout() and setInterval() add to queue</li>
-              </ul>
-            </li>
-            <li>
-              Heap:
+              <strong>Heap</strong>:
               <ul>
                 <li>“Chaotic” collection of objects, context vars, etc.</li>
                 <li>Garbage Collection cleans items from heap</li>
               </ul>
             </li>
             <li>
-              Event Handlers:
+              <strong>Event Handlers</strong>:
               <ul>
                 <li>Can add items to queue in the future</li>
               </ul>
@@ -125,9 +127,9 @@
         </section>
 
         <section>
-          <h3>Beautiful Diagram</h3>
+          <h3>Stack/Queue/Heap Diagram</h3>
 
-          <img style="max-width: 300px; max-height: 300px;" src="images/stack-heap-queue.svg" />
+          <img style="width: 400px;" src="images/stack-heap-queue.svg" />
 
           <p><small>Credit: Mozilla Developer Network:<br /><a href="http://mzl.la/Y5Dh2x">http://mzl.la/Y5Dh2x</a></small></p>
         </section>
@@ -183,7 +185,7 @@
         <section>
           <h3>Your App is Mostly Asleep</h3>
           <ul>
-            <li>Node.js: 
+            <li>Node.js
               <ul>
                 <li>All I/O is non-blocking (libuv)</li>
                 <li>C++ API does the heavy lifting</li>
@@ -193,11 +195,7 @@
             <li>Browser
               <ul>
                 <li>Wait for a click to happen</li>
-              </ul>
-            </li>
-            <li>PHP
-              <ul>
-                <li>Wait for a MySQL query to run</li>
+                <li>Wait for AJAX response</li>
               </ul>
             </li>
           </ul>
@@ -208,7 +206,7 @@
           <ul>
             <li>Traditional web apps perform each I/O Sequentially</li>
             <li>With an Event Loop, they can be run in Parallel</li>
-            <li>Since most time is spent waiting for I/O, very inefficient</li>
+            <li>Most time waiting for I/O, sequential is inefficient</li>
           </ul>
 
           <h5>Sequential I/O</h5>
@@ -246,7 +244,7 @@
                 <li>Though you can use the Multi-Node module</li>
               </ul>
             </li>
-            <li>Memory leaks are possible, not so with PHP
+            <li>Memory leaks can easily occur
               <ul>
                 <li>Though you can write your apps more carefully ;-)</li>
               </ul>
@@ -336,7 +334,7 @@
               <ul>
               <li>Great for I/O bound applications (most web apps)</li>
               <li>Horrible for CPU bound applications (do it in C)</li>
-              <li>“Fakes” the feeling of a Multi-Threaded process</li>
+              <li>Very easy to perform parallelized I/O</li>
               </ul>
             </li>
           </ul>
