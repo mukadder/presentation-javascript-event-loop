@@ -52,11 +52,11 @@
       .reveal .slides section .fragment.highlight-current-green.current-fragment * {
         color: black;
       }
-      #dom-output {
+      .dom-output {
         max-height: 40px;
         overflow: hidden;
       }
-      #dom-output div {
+      .dom-output div {
         width: 1px;
         height: 1px;
         background-color: #ff0000;
@@ -174,6 +174,7 @@
           </ul>
         </section>
 
+        <!--
         <section>
           <h3>Your App is Mostly Asleep</h3>
           <ul>
@@ -208,7 +209,6 @@
           <img width="480" height="92" src="./images/parallel.svg" />
         </section>
 
-        <!--
         <section>
           <h4>Why Single-Threaded Event Loops are Awesome:</h4>
           <ul>
@@ -252,15 +252,15 @@
             <code id="dom-single-stack-result">...</code>
           </div>
 
-          <h3>Single Stack Work</h3>
+          <h3>Single Stack: Freeze Rendering</h3>
 
-          <div><img src="./images/single-stack.png" style="zoom: 0.8;" /></div>
+          <img src="./images/single-stack.png" style="zoom: 0.8;" />
 
           <pre>
             <code class="javascript">
-              var LIMIT = 100000;
+              var LIMIT = 200000;
 
-              function drawMany() {
+              function draw() {
                 for (var i = 0; i &lt; LIMIT; i++) {
                   output.appendChild(document.createElement('div'));
                 }
@@ -268,11 +268,11 @@
             </code>
           </pre>
 
-          <div id="dom-output-single"></div>
+          <div class="dom-output" id="dom-output-single"></div>
 
           <script>
             (function() {
-              var LIMIT = 100000;
+              var LIMIT = 200000;
               var RENDER_WAIT = 10;
 
               var buttonSingleStack = document.getElementById('dom-single-stack');
@@ -302,20 +302,23 @@
 
               buttonSingleStack.addEventListener('click', function() {
                 clear();
-
-                hide();
-                var start = new Date();
-
-                drawMany();
+                resultSingleStack.innerHTML = '...';
+                // hide();
 
                 setTimeout(function() {
-                  var end = new Date();
-                  show();
+                  var start = new Date();
 
-                  resultSingleStack.innerHTML = ((end - start) - RENDER_WAIT) + 'ms';
+                  drawMany();
 
-                  clear();
-                }, RENDER_WAIT); // Wait long enough so that rendering kicks in for certain
+                  setTimeout(function() {
+                    var end = new Date();
+                    // show();
+
+                    resultSingleStack.innerHTML = ((end - start) - RENDER_WAIT) + 'ms';
+
+                    clear();
+                  }, RENDER_WAIT); // Wait long enough so that rendering kicks in for certain
+                }, RENDER_WAIT);
               });
             })();
           </script>
@@ -327,35 +330,35 @@
             <code id="dom-many-stack-result">...</code>
           </div>
 
-          <h3>Multi Stack Work</h3>
+          <h3>Queueing: Allows Rendering</h3>
 
-          <div><img src="./images/many-stacks.png" style="zoom: 0.8;" /></div>
+          <img src="./images/many-stacks.png" style="zoom: 0.8;" />
 
           <pre>
             <code class="javascript">
-              var LIMIT = 100000;
-              var CHUNK = 100;
+              var LIMIT = 200000;
+              var CHUNK = 400;
 
-              function drawFew(start, callback) {
-                if (start &gt;= LIMIT) return callback();
-
+              function draw(start, callback) {
                 for (var i = 0; i &lt; CHUNK; i++) {
                   output.appendChild(document.createElement('div'));
                 }
 
+                if (start &gt;= LIMIT) return callback();
+
                 setTimeout(function() {
-                  drawFew(start + CHUNK, callback);
+                  draw(start + CHUNK, callback);
                 }, 0);
               }
             </code>
           </pre>
 
-          <div id="dom-output-many"></div>
+          <div class="dom-output" id="dom-output-many"></div>
 
           <script>
             (function() {
-              var LIMIT = 100000;
-              var CHUNK = 100;
+              var LIMIT = 200000;
+              var CHUNK = 400;
               var RENDER_WAIT = 10;
 
               var buttonManyStack = document.getElementById('dom-many-stack');
@@ -378,12 +381,12 @@
               }
 
               function drawFew(start, callback) {
-                if (start >= LIMIT) {
-                  return callback();
-                }
-
                 for (var i = 0; i < CHUNK; i++) {
                   output.appendChild(document.createElement('div'));
+                }
+
+                if (start >= LIMIT) {
+                  return callback();
                 }
 
                 setTimeout(function() {
@@ -394,12 +397,13 @@
               buttonManyStack.addEventListener('click', function() {
                 clear();
 
-                hide();
+                // hide();
                 var start = new Date();
+                resultManyStack.innerHTML = '...';
 
                 drawFew(0, function() {
                   var end = new Date();
-                  show();
+                  // show();
 
                   resultManyStack.innerHTML = (end - start) + 'ms';
 
@@ -417,19 +421,27 @@
           </div>
 
           <script>
-            var buttonCurrent = document.getElementById('work-current');
-            var resultCurrent = document.getElementById('work-current-result');
+            (function() {
+              var buttonCurrent = document.getElementById('work-current');
+              var resultCurrent = document.getElementById('work-current-result');
 
-            buttonCurrent.addEventListener('click', function() {
-              var pi = 0;
-              var n = 1;
-              for (i = 0; i <= 1000000000; i++) {
-                pi = pi + (4/n) - (4 / (n + 2));
-                n = n + 4;
-              }
+              buttonCurrent.addEventListener('click', function() {
+                var start = new Date();
+                resultCurrent.innerHTML = '...';
+                var pi = 0;
+                var n = 1;
+                for (i = 0; i <= 1000000000; i++) {
+                  pi = pi + (4/n) - (4 / (n + 2));
+                  n = n + 4;
+                }
 
-              resultCurrent.innerHTML = pi;
-            });
+                var end = new Date();
+
+                void pi;
+
+                resultCurrent.innerHTML = (end - start) + 'ms';
+              });
+            }());
           </script>
 
           <div class="floater floater-right ">
@@ -438,31 +450,40 @@
           </div>
 
           <script>
-            var buttonWorker = document.getElementById('work-worker');
-            var resultWorker = document.getElementById('work-worker-result');
+            (function() {
+              var buttonWorker = document.getElementById('work-worker');
+              var resultWorker = document.getElementById('work-worker-result');
 
-            try {
-              var worker = new Worker('scripts/task.js');
+              try {
+                var worker = new Worker('scripts/task.js');
 
-              worker.onmessage = function(e) {
-                resultWorker.innerHTML = e.data;
-                console.log(e);
-              };
+                var start, end;
 
-              buttonWorker.addEventListener('click', function() {
-                worker.postMessage({iterations: 1000000000});
-              });
-            } catch(e) {
-              console.error(e);
-              resultWorker.innerHTML = e.name;
-            }
+                worker.onmessage = function(e) {
+                  var end = new Date();
 
+                  void e.data;
+                  resultWorker.innerHTML = (end - start) + 'ms';
+                  console.log(e);
+                };
+
+                buttonWorker.addEventListener('click', function() {
+                  start = new Date();
+                  resultWorker.innerHTML = '...';
+                  worker.postMessage({iterations: 1000000000});
+                });
+              } catch(e) {
+                console.error(e);
+                resultWorker.innerHTML = e.name;
+              }
+            }());
           </script>
 
           <h3>Web Workers</h3>
           <ul>
             <li>Message Passing via JSON structures</li>
             <li>No deadlocks or race conditions, working with “copies”</li>
+            <li>Cannot interact with the DOM!</li>
             <li>IE10, Firefox 3.5, Chrome 4, Safari 4, Opera 10.6</li>
           </ul>
 
@@ -504,7 +525,10 @@
     <script src="./reveal.js-3.2.0/js/reveal.js"></script>
     <script src="./scripts/fpsmeter.min.js"></script>
     <script>
-      var meter = new FPSMeter();
+      var meter = new FPSMeter({
+        heat: true,
+        graph: true
+      });
       function tick() {
         meter.tick();
         requestAnimationFrame(tick);
