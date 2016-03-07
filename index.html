@@ -62,10 +62,14 @@
         background-color: #ff0000;
         display: inline-block;
       }
+      #fps-container {
+        zoom: 200%;
+      }
     </style>
   </head>
 
   <body>
+    <div id="fps-container"></div>
     <div class="reveal">
       <div class="slides">
         <section>
@@ -100,6 +104,7 @@
               <ul>
                 <li>Function calls, context information</li>
                 <li>As functions call functions, add frames to stack</li>
+                <!-- Stack Depths vary by browser: http://stackoverflow.com/a/7828803/538646 -->
               </ul>
             </li>
             <li>
@@ -121,9 +126,11 @@
         <section>
           <h3>Queue/Stack/Heap Diagram</h3>
 
+          <p><small><em>The Event Loop is named after repeatedly taking work from the queue and making new stacks.</em></small></p>
+
           <img style="width: 400px;" src="images/stack-heap-queue.svg" />
 
-          <p><small>Credit: Mozilla Developer Network:<br /><a href="http://mzl.la/Y5Dh2x">http://mzl.la/Y5Dh2x</a></small></p>
+          <p><small>Image Credit: Mozilla Developer Network:<br /><a href="http://mzl.la/Y5Dh2x">http://mzl.la/Y5Dh2x</a></small></p>
         </section>
 
         <section>
@@ -481,10 +488,11 @@
 
           <h3>Web Workers</h3>
           <ul>
+            <li>Separate JavaScript instance, has its own Event Loop</li>
             <li>Message Passing via JSON structures</li>
             <li>No deadlocks or race conditions, working with “copies”</li>
-            <li>Cannot interact with the DOM!</li>
-            <li>IE10, Firefox 3.5, Chrome 4, Safari 4, Opera 10.6</li>
+            <li>Can't touch the DOM, tho AJAX and WebSockets work</li>
+            <!-- Use it anywhere modern: http://caniuse.com/#feat=webworkers -->
           </ul>
 
           <pre>
@@ -511,8 +519,12 @@
           <ul>
             <li>If you'd like to keep your Event Loop running smooth...
               <ul>
-                <li>Spend &lt; 16ms in each stack</li>
-                <li>Split heavy workloads, add to queue</li>
+                <li>Spend &lt; 16ms in each stack
+                  <ul>
+                    <li>Anything slower will be noticed by the human eye</li>
+                  </ul>
+                </li>
+                <li>Split heavy DOM workloads, add to queue</li>
                 <li>Offload CPU intensive work onto a Web Worker</li>
               </ul>
             </li>
@@ -525,9 +537,12 @@
     <script src="./reveal.js-3.2.0/js/reveal.js"></script>
     <script src="./scripts/fpsmeter.min.js"></script>
     <script>
-      var meter = new FPSMeter({
+      var meter = new FPSMeter(document.getElementById('fps-container'), {
+        show: 'ms',
         heat: true,
-        graph: true
+        graph: true,
+        left: 'auto',
+        right: '5px'
       });
       function tick() {
         meter.tick();
