@@ -49,9 +49,18 @@
         color: black;
         background-color: #affa42;
       }
-
       .reveal .slides section .fragment.highlight-current-green.current-fragment * {
         color: black;
+      }
+      #dom-output {
+        max-height: 40px;
+        overflow: hidden;
+      }
+      #dom-output div {
+        width: 1px;
+        height: 1px;
+        background-color: #ff0000;
+        display: inline-block;
       }
     </style>
   </head>
@@ -62,26 +71,9 @@
         <section>
           <h2>The JavaScript Event Loop</h2>
           <p>Presented by <a href="https://twitter.com/tlhunter">@tlhunter</a></p>
-          <p><br /><br /><a href="http://bit.ly/1JUReh0">bit.ly/1JUReh0</a></p>
-          <!--<p><small>(Originally presented at Penguicon 2013)</small></p>-->
+          <img src="images/opentable.png" alt="Open Table" />
+          <p><a href="http://bit.ly/1JUReh0">bit.ly/1JUReh0</a></p>
         </section>
-
-        <!--
-        <section>
-          <h3>What does Multi-Threaded mean?</h3>
-          <ul>
-            <li>Makes use of separate CPU Cores via “Threads”
-              <ul>
-                <li>Does so using a single process</li>
-              </ul>
-            </li>
-            <li>True concurrency, lets you do two things at once</li>
-            <li>Race Conditions, deadlocks, simultaneous memory usage</li>
-            <li>“Hard” to get it right, problems are hard to debug</li>
-            <li>Moore's Law, ran out of Ghz, add more cores</li>
-          </ul>
-        </section>
-        -->
 
         <section>
           <h3>JavaScript is Single-Threaded</h3>
@@ -216,6 +208,7 @@
           <img width="480" height="92" src="./images/parallel.svg" />
         </section>
 
+        <!--
         <section>
           <h4>Why Single-Threaded Event Loops are Awesome:</h4>
           <ul>
@@ -251,6 +244,171 @@
             </li>
           </ul>
         </section>
+        -->
+
+        <section>
+          <div class="floater floater-left">
+            <button id="dom-single-stack">Single Stack</button> 
+            <code id="dom-single-stack-result">...</code>
+          </div>
+
+          <h3>Single Stack Work</h3>
+
+          <div><img src="./images/single-stack.png" style="zoom: 0.8;" /></div>
+
+          <pre>
+            <code class="javascript">
+              var LIMIT = 100000;
+
+              function drawMany() {
+                for (var i = 0; i &lt; LIMIT; i++) {
+                  output.appendChild(document.createElement('div'));
+                }
+              }
+            </code>
+          </pre>
+
+          <div id="dom-output-single"></div>
+
+          <script>
+            (function() {
+              var LIMIT = 100000;
+              var RENDER_WAIT = 10;
+
+              var buttonSingleStack = document.getElementById('dom-single-stack');
+              var resultSingleStack = document.getElementById('dom-single-stack-result');
+
+              var output = document.getElementById('dom-output-single');
+
+              function clear() {
+                while (output.firstChild) {
+                  output.removeChild(output.firstChild);
+                }
+              }
+
+              function hide() {
+                output.style.display = "none";
+              }
+
+              function show() {
+                output.style.display = "block";
+              }
+
+              function drawMany() {
+                for (var i = 0; i < LIMIT; i++) {
+                  output.appendChild(document.createElement('div'));
+                }
+              }
+
+              buttonSingleStack.addEventListener('click', function() {
+                clear();
+
+                hide();
+                var start = new Date();
+
+                drawMany();
+
+                setTimeout(function() {
+                  var end = new Date();
+                  show();
+
+                  resultSingleStack.innerHTML = ((end - start) - RENDER_WAIT) + 'ms';
+
+                  clear();
+                }, RENDER_WAIT); // Wait long enough so that rendering kicks in for certain
+              });
+            })();
+          </script>
+        </section>
+
+        <section>
+          <div class="floater floater-left">
+            <button id="dom-many-stack">Many Stacks</button> 
+            <code id="dom-many-stack-result">...</code>
+          </div>
+
+          <h3>Multi Stack Work</h3>
+
+          <div><img src="./images/many-stacks.png" style="zoom: 0.8;" /></div>
+
+          <pre>
+            <code class="javascript">
+              var LIMIT = 100000;
+              var CHUNK = 100;
+
+              function drawFew(start, callback) {
+                if (start &gt;= LIMIT) return callback();
+
+                for (var i = 0; i &lt; CHUNK; i++) {
+                  output.appendChild(document.createElement('div'));
+                }
+
+                setTimeout(function() {
+                  drawFew(start + CHUNK, callback);
+                }, 0);
+              }
+            </code>
+          </pre>
+
+          <div id="dom-output-many"></div>
+
+          <script>
+            (function() {
+              var LIMIT = 100000;
+              var CHUNK = 100;
+              var RENDER_WAIT = 10;
+
+              var buttonManyStack = document.getElementById('dom-many-stack');
+              var resultManyStack = document.getElementById('dom-many-stack-result');
+
+              var output = document.getElementById('dom-output-many');
+
+              function clear() {
+                while (output.firstChild) {
+                  output.removeChild(output.firstChild);
+                }
+              }
+
+              function hide() {
+                output.style.display = "none";
+              }
+
+              function show() {
+                output.style.display = "block";
+              }
+
+              function drawFew(start, callback) {
+                if (start >= LIMIT) {
+                  return callback();
+                }
+
+                for (var i = 0; i < CHUNK; i++) {
+                  output.appendChild(document.createElement('div'));
+                }
+
+                setTimeout(function() {
+                  drawFew(start + CHUNK, callback);
+                }, 0);
+              }
+
+              buttonManyStack.addEventListener('click', function() {
+                clear();
+
+                hide();
+                var start = new Date();
+
+                drawFew(0, function() {
+                  var end = new Date();
+                  show();
+
+                  resultManyStack.innerHTML = (end - start) + 'ms';
+
+                  clear();
+                });
+              });
+            })();
+          </script>
+        </section>
 
         <section>
           <div class="floater floater-left">
@@ -284,7 +442,7 @@
             var resultWorker = document.getElementById('work-worker-result');
 
             try {
-              var worker = new Worker('task.js');
+              var worker = new Worker('scripts/task.js');
 
               worker.onmessage = function(e) {
                 resultWorker.innerHTML = e.data;
@@ -344,6 +502,16 @@
 
     <script src="./reveal.js-3.2.0/lib/js/head.min.js"></script>
     <script src="./reveal.js-3.2.0/js/reveal.js"></script>
+    <script src="./scripts/fpsmeter.min.js"></script>
+    <script>
+      var meter = new FPSMeter();
+      function tick() {
+        meter.tick();
+        requestAnimationFrame(tick);
+      }
+
+      tick();
+    </script>
 
     <script>
       Reveal.initialize({
