@@ -134,7 +134,7 @@
                 <span class="fragment highlight-current-green" data-fragment-index="5">console.log("Adding code to the stack");</span>
 
                 <span class="fragment highlight-current-green" data-fragment-index="6">setTimeout</span>(<span class="fragment highlight-current-green" data-fragment-index="2">function c() { // c() Added somewhere in Heap</span>
-                  <span class="fragment highlight-current-green" data-fragment-index="15">console.log("Running next code from queue");</span>
+                  <span class="fragment highlight-current-green" data-fragment-index="15">console.log("c() Running next code from queue");</span>
                 }, 0);
 
                 <span class="fragment highlight-current-green" data-fragment-index="3">function a(x) { // a() Added somewhere in Heap</span>
@@ -170,7 +170,7 @@
             <li>b() frame removed from stack</li>
             <li>a() frame removed from stack</li>
             <li>Ending work for this stack</li>
-            <li>Running next code from queue</li>
+            <li>c() Running next code from queue</li>
           </ul>
         </section>
 
