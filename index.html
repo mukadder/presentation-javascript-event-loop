@@ -119,7 +119,7 @@
         </section>
 
         <section>
-          <h3>Stack/Queue/Heap Diagram</h3>
+          <h3>Queue/Stack/Heap Diagram</h3>
 
           <img style="width: 400px;" src="images/stack-heap-queue.svg" />
 
@@ -260,7 +260,7 @@
             <code class="javascript">
               var LIMIT = 200000;
 
-              function draw() {
+              function drawMany() {
                 for (var i = 0; i &lt; LIMIT; i++) {
                   output.appendChild(document.createElement('div'));
                 }
@@ -339,7 +339,7 @@
               var LIMIT = 200000;
               var CHUNK = 400;
 
-              function draw(start, callback) {
+              function drawFew(start, callback) {
                 for (var i = 0; i &lt; CHUNK; i++) {
                   output.appendChild(document.createElement('div'));
                 }
@@ -347,7 +347,7 @@
                 if (start &gt;= LIMIT) return callback();
 
                 setTimeout(function() {
-                  draw(start + CHUNK, callback);
+                  drawFew(start + CHUNK, callback);
                 }, 0);
               }
             </code>
@@ -509,11 +509,11 @@
         <section>
           <h3>Conclusion</h3>
           <ul>
-            <li>The Single-Threaded JavaScript Event Loop is...
+            <li>If you'd like to keep your Event Loop running smooth...
               <ul>
-              <li>Great for I/O bound applications (most web apps)</li>
-              <li>Horrible for CPU bound applications (do it in C)</li>
-              <li>Very easy to perform parallelized I/O</li>
+                <li>Spend &lt; 16ms in each stack</li>
+                <li>Split heavy workloads, add to queue</li>
+                <li>Offload CPU intensive work onto a Web Worker</li>
               </ul>
             </li>
           </ul>
